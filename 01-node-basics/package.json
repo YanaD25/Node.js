@@ -1,0 +1,30 @@
+{
+  "name": "node",
+  "version": "1.0.0",
+  "description": "NodeJS homework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YanaD25/Node.js.git"
+  },
+  "author": "YanaDerevianko <yanaderevianko25@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YanaD25/Node.js/issues"
+  },
+  "homepage": "https://github.com/YanaD25/Node.js#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "uuid": "^8.3.2",
+    "uuidv4": "^6.2.6"
+  },
+  "devDependencies": {
+    "mocha": "^8.2.1",
+    "nodemon": "^2.0.6"
+  }
+}
