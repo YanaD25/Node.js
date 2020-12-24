@@ -2,6 +2,8 @@ const cors = require("cors");
 const morgan = require("morgan");
 const express = require("express");
 const contactRoutes = require("./routes/contact.route");
+const  contacts = require('./contacts.js');
+
 
 const PORT = 8080;
 class Server {
@@ -20,7 +22,7 @@ class Server {
     this.server.use(express.json());
   }
   initRoutes() {
-    this.server.use("/contacts", contactRoutes);
+    this.server.use("/api/contacts", contactRoutes);
   }
   listen() {
     this.server.listen(PORT, () => {
@@ -29,7 +31,7 @@ class Server {
   }
 }
 const server = new Server();
-server.start;
+server.start();
 
 // const  app = express();
 // app.use(require('morgan')('dev'));
