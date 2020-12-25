@@ -1,20 +1,33 @@
-const contacts = require("../db/contacts.json");
+// const contacts = require("../db/contacts.json");
 const Joi = require("joi");
+const {
+  listContacts,
+  getContactById,
+  addContact,
+  removeContact,
+  updateContact,
+} = require("../contacts.js");
 
 class ContactController {
-  listContacts(req, res) {
-    res.json(contacts);
+  getContacts(req, res) {
+    const data = listContacts();
+    if (!data) {
+      return res.status(404).json({ message: "Not Found" });
+    }
+    return res.status(200).json(data);
   }
-  addContact(req, res) {
-    const { body } = req;
-    const newContact = {
-      id: contacts.length + 1,
-      ...body,
-    };
-    contacts.push(newContact);
-    res.json(newContact);
+  findContactById(req, res) {
+    const data = getContactById(req.params.contactId);
+    if (!data) {
+      return res.status(404).json({ message: "Not Found" });
+    }
+    return res.status(200).json(data);
   }
-  validateAddContact(req, res, next) {
+  postContact(req, res) {
+    const data = addContact(req.body);
+    return res.status(201).json(data);
+  }
+  validatePostContact(req, res, next) {
     const validationRules = Joi.object({
       name: Joi.string().required(),
       email: Joi.string().required(),
@@ -26,58 +39,48 @@ class ContactController {
     }
     next();
   }
-  updateContact = (req, res) => {
-    const { id } = req.params;
-    // console.log("params ", req.params);
 
-    const contactIndex = this.getContactIndex(id);
+  //delete contact  by ID
+  deleteContact(req, res) {
+    const data = removeContact(req.params.contactId);
+    if (!data) {
+      return res.status(404).json({ message: "Not Found" });
+    }
+    return res.status(200).json({ message: "contact deleted" });
+  }
 
-    const updatedContact = {
-      ...contacts[contactIndex],
-      ...req.body,
-    };
-    contacts[contactIndex] = updatedContact;
-    res.json(updatedContact);
-  };
-  validateUpdateContact = (req, res, next) => {
+  // update contact by ID
+  updateContactById(req, res) {
+    const data = updateContact(req.params.contactId, req.body);
+    if (!data) {
+      return res.status(404).json({ message: "Not Found" });
+    }
+    return res.status(200).json(data);
+  }
+  validateUpdateContact(req, res, next) {
     const validationRules = Joi.object({
       name: Joi.string(),
       email: Joi.string(),
       phone: Joi.string(),
     });
     const validationResult = validationRules.validate(req.body);
-    if (validationResult.error) {
-      return res.status(404).send(validationResult.error);
+    const isResultEmpty = Object.keys(validationResult.value).length === 0;
+    if (isResultEmpty) {
+      return res.status(400).send("missing fields");
     }
     next();
-  };
-  getContactIndex(id) {
-    const contactId = parseInt(id);
-    return contacts.findIndex(({ id }) => id === contactId);
   }
-  validateContactId = (req, res, next) => {
-    const { id } = req.params;
-    const contactIndex = this.getContactIndex(id);
-    if (contactIndex === -1) {
-      return res.status(404).send("Contact is not found");
+  validatePostContact(req, res, next) {
+    const validationRules = Joi.object({
+      name: Joi.string().required(),
+      email: Joi.string().required(),
+      phone: Joi.string().required(),
+    });
+    const validationResult = validationRules.validate(req.body);
+    if (validationResult.error) {
+      return res.status(400).send("Missing required name field");
     }
     next();
-  };
-  deleteContact = (req, res) => {
-    const { id } = req.params;
-    const contactIndex = this.getContactIndex(id);
-    const deletedContact = contacts.splice(contactIndex, 1);
-    res.json(deletedContact);
-  };
-  getContactById = (req, res) => {
-    const {
-      params: { id },
-    } = req;
-    
-    const contactIndex = this.getContactIndex(id);
-    const deletedContact = contacts[contactIndex];
-    res.json(deletedContact);
-  };
+  }
 }
-
 module.exports = new ContactController();

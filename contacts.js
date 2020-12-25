@@ -2,67 +2,101 @@ const fs = require("fs");
 const path = require("path");
 const { uuid } = require("uuidv4");
 
-// Раскомментируй и запиши значение
 const contactsPath = path.join(__dirname, "db/contacts.json");
 
-// TODO: задокументировать каждую функцию
+//get all contacts
 function listContacts() {
-  fs.readFile(contactsPath, "utf-8", (err, data) => {
+  const result = fs.readFileSync(contactsPath, "utf-8", (err) => {
     if (err) {
-      console.log("listContacts", err);
+      return console.log("listContacts", err);
     }
-    console.table(JSON.parse(data));
   });
-}
 
+  return JSON.parse(result);
+}
+//get contact by ID
 function getContactById(contactId) {
-  fs.readFile(contactsPath, "utf-8", (err, data) => {
+  const findedContact = fs.readFileSync(contactsPath, "utf-8", (err) => {
     if (err) {
       console.log("getContactById", err);
     }
-    const searchContactById = JSON.parse(data).find(
-      (contact) => contact.id === contactId
-    );
-    console.log(searchContactById);
   });
+  const data = JSON.parse(findedContact);
+  const requiredContact = data.filter(
+    (contact) => contact.id === Number(contactId)
+  );
+  return requiredContact[0];
 }
-function removeContact(contactId) {
-  // ...твой код
-  fs.readFile(contactsPath, "utf-8", (err, data) => {
+// add contact
+function addContact({ name, email, phone }) {
+  const contacts = fs.readFileSync(contactsPath, "utf-8", (err) => {
+    console.log(contacts);
     if (err) {
-      console.log("removeContact", err);
+      console.log(err);
     }
-    const removeContact = JSON.parse(data).filter(
-      (contact) => contact.id !== contactId
-    );
-    fs.writeFile(contactsPath, JSON.stringify(removeContact), (err) => {
+  });
+  const parseData = JSON.parse(contacts);
+  const newID = parseData.length + 1;
+  const newContact = [{ id: newID, name, email, phone }];
+  const updatedContacts = [...parseData, ...newContact];
+  const updatedContactJson = JSON.stringify(updatedContacts);
+  fs.writeFileSync(contactsPath, updatedContactJson, (err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+  return newContact[0];
+}
+
+// delete contact by ID
+function removeContact(contactId) {
+  const contacts = fs.readFileSync(contactsPath, (err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+  const data = JSON.parse(contacts);
+  const idForDelete = data.find((contact) => contact.id === Number(contactId));
+  const filteredData = data.filter(
+    (contact) => contact.id !== Number(contactId)
+  );
+  const filteredContactsJson = JSON.stringify(filteredData);
+  fs.writeFileSync(contactsPath, filteredContactsJson, (err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+  return idForDelete;
+}
+function updateContact(contactId, bodyPart) {
+  const contacts = fs.readFileSync(contactsPath, (err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+  const data = JSON.parse(contacts);
+  const findIdxById = data.findIndex(
+    (contact) => contact.id === Number(contactId)
+  );
+  if (findIdxById !== -1) {
+    data[findIdxById] = {
+      ...data[findIdxById],
+      ...bodyPart,
+    };
+    const dataJson = JSON.stringify(data);
+    fs.writeFileSync(contactsPath, dataJson, (err) => {
       if (err) {
         console.log(err);
       }
     });
-    console.table(removeContact);
-  });
+    return data[findIdxById];
+  }
 }
 
-function addContact(name, email, phone) {
-  // ...твой код
-  fs.readFile(contactsPath, "utf-8", (err, data) => {
-    const newContacts = [
-      ...JSON.parse(data),
-      { id: uuid(), name, email, phone },
-    ];
-    fs.writeFile(contactsPath, JSON.stringify(newContacts), (err, data) => {
-      if (err) {
-        console.log(err);
-      }
-      console.table(newContacts);
-    });
-  });
-}
-
-// listContacts();
-// getContactById();
-// removeContact();
-// addContact();
-
-module.exports = { listContacts, getContactById, addContact, removeContact };
+module.exports = {
+  listContacts,
+  getContactById,
+  addContact,
+  removeContact,
+  updateContact,
+};
