@@ -1,0 +1,26 @@
+{
+  "name": "Node.js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "morgan": "^1.10.0",
+    "joi": "^17.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YanaD25/Node.js.git"
+  },
+  "keywords": [],
+  "author": "YanaDerevianko <yanaderevianko25@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YanaD25/Node.js/issues"
+  },
+  "homepage": "https://github.com/YanaD25/Node.js#readme"
+}
