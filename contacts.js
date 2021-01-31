@@ -60,9 +60,6 @@ function addContact(name, email, phone) {
   });
 }
 
-// listContacts();
-// getContactById();
-// removeContact();
-// addContact();
+
 
 module.exports = { listContacts, getContactById, addContact, removeContact };
